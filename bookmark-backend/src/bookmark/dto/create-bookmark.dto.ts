@@ -12,4 +12,8 @@ export class CreateBookmarkDto {
   @IsUrl()
   @IsNotEmpty()
   link: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Bookmark image URL is required' })
+  bookmarkImg: string;
 }
