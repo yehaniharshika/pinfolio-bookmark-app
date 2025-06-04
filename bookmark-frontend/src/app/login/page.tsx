@@ -8,24 +8,30 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const storedUser = localStorage.getItem("user");
+    try {
+      const response = await fetch("http://localhost:3333/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (storedUser) {
-      const { email: storedEmail, password: storedPassword } =
-        JSON.parse(storedUser);
-
-      if (email === storedEmail && password === storedPassword) {
-        // Successful login - navigate to home page
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.access_token);
         alert("Login successful!");
-        router.push("/"); // or router.push("/home") depending on your route structure
+        router.replace("/"); 
       } else {
-        alert("Invalid login credentials");
+        const errorData = await response.json();
+        alert(`Login failed: ${errorData.message || "Unknown error"}`);
       }
-    } else {
-      alert("No user found. Please sign up first.");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong.");
     }
   };
 
