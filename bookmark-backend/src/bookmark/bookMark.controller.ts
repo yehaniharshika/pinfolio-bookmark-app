@@ -1,8 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  InternalServerErrorException,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { BookMarkService } from './bookMark.service';
@@ -12,8 +15,10 @@ import { GetUser } from 'src/auth/decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { JwtGuard } from 'src/auth/guard';
 
 @Controller('bookmark')
+@UseGuards(JwtGuard)
 export class BookMarkController {
   constructor(private bookmarkService: BookMarkService) {}
 
@@ -21,22 +26,38 @@ export class BookMarkController {
   @UseInterceptors(
     FileInterceptor('bookmarkImg', {
       storage: diskStorage({
-        destination: './uploads/bookmarks',
+        destination: './uploads',
         filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           callback(null, `bookmark-${uniqueSuffix}${ext}`);
         },
       }),
     }),
   )
-  createBookmark(
+  async createBookmark(
     @GetUser('id') userId: number,
     @Body() dto: CreateBookmarkDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    dto.bookmarkImg = file.filename;
-    return this.bookmarkService.create(userId, dto);
+    try {
+      console.log('UserID:', userId); // for debugging
+
+      if (!userId) {
+        throw new BadRequestException('User ID is required');
+      }
+
+      if (!file) {
+        throw new BadRequestException('Bookmark image is required');
+      }
+
+      dto.bookmarkImg = file.filename;
+
+      const result = await this.bookmarkService.create(userId, dto);
+      return result;
+    } catch (error) {
+      console.error('Create Bookmark Error (Controller):', error);
+      throw new InternalServerErrorException('Something went wrong while creating the bookmark');
+    }
   }
 }
