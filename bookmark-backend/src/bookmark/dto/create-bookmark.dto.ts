@@ -9,9 +9,9 @@ export class CreateBookmarkDto {
   @IsNotEmpty({ message: 'Title is required' })
   title: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  @IsNotEmpty()
+  description: string;
 
   @IsUrl({}, { message: 'Link must be a valid URL' })
   @IsNotEmpty({ message: 'Link is required' })
