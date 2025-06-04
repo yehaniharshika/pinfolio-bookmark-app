@@ -3,7 +3,9 @@ import {
   Body,
   Controller,
   InternalServerErrorException,
+  Param,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -28,7 +30,8 @@ export class BookMarkController {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           callback(null, `bookmark-${uniqueSuffix}${ext}`);
         },
@@ -57,7 +60,60 @@ export class BookMarkController {
       return result;
     } catch (error) {
       console.error('Create Bookmark Error (Controller):', error);
-      throw new InternalServerErrorException('Something went wrong while creating the bookmark');
+      throw new InternalServerErrorException(
+        'Something went wrong while creating the bookmark',
+      );
+    }
+  }
+
+  @Put('update/:id')
+  @UseInterceptors(
+    FileInterceptor('bookmarkImg', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `bookmark-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
+  )
+  async updateBookmark(
+    @Param('id') bookmarkId: string,
+    @GetUser('id') userId: number,
+    @Body() dto: CreateBookmarkDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    try {
+      console.log('User ID:', userId, 'Bookmark ID:', bookmarkId);
+
+      if (!userId) {
+        throw new BadRequestException('User ID is required');
+      }
+
+      if (!bookmarkId) {
+        throw new BadRequestException('Bookmark ID is required');
+      }
+
+      // Optional file upload check
+      if (file) {
+        dto.bookmarkImg = file.filename;
+      }
+
+      //  convert that string into a number
+      const result = await this.bookmarkService.update(
+        +bookmarkId,
+        userId,
+        dto,
+      );
+      return result;
+    } catch (error) {
+      console.error('Update Bookmark Error (Controller):', error);
+      throw new InternalServerErrorException(
+        'Something went wrong while updating the bookmark',
+      );
     }
   }
 }

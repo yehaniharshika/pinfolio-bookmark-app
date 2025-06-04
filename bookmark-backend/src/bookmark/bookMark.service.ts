@@ -1,6 +1,11 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBookmarkDto } from './dto/create-bookmark.dto';
+import { UpdateBookMarkDto } from './dto/update-bookmark.dto';
 
 @Injectable()
 export class BookMarkService {
@@ -35,6 +40,54 @@ export class BookMarkService {
     } catch (error) {
       console.error('Create Bookmark Error:', error);
       throw new InternalServerErrorException('Failed to create bookmark');
+    }
+  }
+
+  async update(bookmarkId: number, userId: number, dto: UpdateBookMarkDto) {
+    try {
+      // Find the bookmark by id and userId to ensure ownership
+      const existingBookmark = await this.prisma.bookMark.findFirst({
+        where: {
+          id: bookmarkId,
+          userId: userId,
+        },
+      });
+
+      if (!existingBookmark) {
+        throw new BadRequestException(
+          'Bookmark not found or you do not have permission to update it',
+        );
+      }
+
+      // Update bookmark with provided fields
+      const updatedBookmark = await this.prisma.bookMark.update({
+        where: { id: bookmarkId },
+        data: {
+          title: dto.title ?? existingBookmark.title,
+          description: dto.description ?? existingBookmark.description,
+          link: dto.link ?? existingBookmark.link,
+          bookmarkImg: dto.bookmarkImg ?? existingBookmark.bookmarkImg,
+          // You usually don't manually set createdAt or updatedAt here
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          link: true,
+          bookmarkImg: true,
+          userId: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return {
+        message: 'Bookmark updated successfully ✅',
+        data: updatedBookmark,
+      };
+    } catch (error) {
+      console.error('Update Bookmark Error:', error);
+      throw new InternalServerErrorException('Failed to update bookmark');
     }
   }
 }

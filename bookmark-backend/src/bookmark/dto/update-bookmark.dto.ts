@@ -16,4 +16,10 @@ export class UpdateBookMarkDto {
   @IsOptional()
   @IsString({ message: 'Bookmark image must be a string' })
   bookmarkImg?: string;
+
+  @IsOptional()
+  createdAt?: Date;
+
+  @IsOptional()
+  updatedAt?: Date;
 }
