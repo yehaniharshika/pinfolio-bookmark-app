@@ -5,27 +5,39 @@ import Link from "next/link";
 
 const SignupPage = () => {
   const router = useRouter();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Save user info in localStorage
-    const user = {
-      fullName,
-      email,
-      password,
-    };
+    try {
+      const response = await fetch("http://localhost:3333/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName,
+          lastName,
+        }),
+      });
 
-    localStorage.setItem("user", JSON.stringify(user));
-    
-    // Show success message
-    alert("Account created successfully! Please log in.");
-
-    // Go to login page
-    router.push("/login");
+      if (response.ok) {
+        alert("Signup successful! Please log in.");
+        router.push("/login");
+      } else {
+        const errorData = await response.json();
+        alert(`Signup failed: ${errorData.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Something went wrong.");
+    }
   };
 
   return (
@@ -35,11 +47,19 @@ const SignupPage = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="First Name"
             className="p-3 border rounded"
             required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            className="p-3 border rounded"
+            required
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
           <input
             type="email"
