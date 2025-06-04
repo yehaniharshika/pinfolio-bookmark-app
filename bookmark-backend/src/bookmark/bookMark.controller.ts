@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   InternalServerErrorException,
   Param,
   Post,
@@ -129,6 +130,18 @@ export class BookMarkController {
       console.error('Delete Bookmark Error (Controller):', error);
       throw new InternalServerErrorException(
         'Something went wrong while deleting the bookmark',
+      );
+    }
+  }
+
+  @Get('all')
+  async getAllBookmarks(@GetUser('id') userId: number) {
+    try {
+      return await this.bookmarkService.getAll(userId);
+    } catch (error) {
+      console.error('Get All Bookmarks Error (Controller):', error);
+      throw new InternalServerErrorException(
+        'Something went wrong while fetching bookmarks',
       );
     }
   }

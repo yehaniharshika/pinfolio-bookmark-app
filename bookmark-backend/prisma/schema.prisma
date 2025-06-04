@@ -34,11 +34,11 @@ model BookMark {
   updatedAt DateTime @updatedAt
 
   title       String
-  description String
+  description String @db.Text
   link        String
-  bookmarkImg String  @db.Text
+  bookmarkImg String @db.Text
   userId      Int
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade) // ← Fixed field name to match
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade) // ← Fixed field name to match
 
   @@map("bookmarks")
 }

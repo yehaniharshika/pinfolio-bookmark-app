@@ -68,7 +68,6 @@ export class BookMarkService {
           description: dto.description ?? existingBookmark.description,
           link: dto.link ?? existingBookmark.link,
           bookmarkImg: dto.bookmarkImg ?? existingBookmark.bookmarkImg,
-          // You usually don't manually set createdAt or updatedAt here
         },
         select: {
           id: true,
@@ -117,6 +116,32 @@ export class BookMarkService {
     } catch (error) {
       console.error('Delete Bookmark Error:', error);
       throw new InternalServerErrorException('Failed to delete bookmark');
+    }
+  }
+
+  async getAll(userId: number) {
+    try {
+      const bookmarks = await this.prisma.bookMark.findMany({
+        where: { userId: userId },
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          link: true,
+          bookmarkImg: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      return {
+        message: 'Bookmarks fetched successfully 📚',
+        data: bookmarks,
+      };
+    } catch (error) {
+      console.error('Get All Bookmarks Error:', error);
+      throw new InternalServerErrorException('Failed to fetch bookmarks');
     }
   }
 }
