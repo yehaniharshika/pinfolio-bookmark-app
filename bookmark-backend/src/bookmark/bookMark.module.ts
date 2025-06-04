@@ -1,12 +1,14 @@
-import { Module } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
-import { BookMarkController } from "./bookMark.controller";
+import { Module } from '@nestjs/common';
+
+import { PrismaModule } from '../prisma/prisma.module';
+import { BookMarkController } from './bookMark.controller';
+import { BookMarkService } from './bookMark.service';
 
 @Module({
-    imports: [JwtModule.register({})],
-    controllers:[BookMarkController],
-    providers:[]
+  imports: [PrismaModule],
+  controllers: [BookMarkController],
+  providers: [BookMarkService],
 })
-export class BookMarkModule{
-    
+export class BookMarkModule {
+
 }

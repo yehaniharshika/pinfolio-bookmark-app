@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserNModule } from './user/user.model'; // should probably be user.module.ts
 import { Service } from './.service'; // double check if this is correct
 import { UserController } from './user/user.controller';
+import { BookMarkModule } from './bookmark/bookMark.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserController } from './user/user.controller';
     PrismaModule,
     AuthModule,
     UserNModule,
+    BookMarkModule,
   ],
   controllers: [UserController],
   providers: [Service],
