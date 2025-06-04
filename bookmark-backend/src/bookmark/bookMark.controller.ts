@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   InternalServerErrorException,
   Param,
   Post,
@@ -113,6 +114,21 @@ export class BookMarkController {
       console.error('Update Bookmark Error (Controller):', error);
       throw new InternalServerErrorException(
         'Something went wrong while updating the bookmark',
+      );
+    }
+  }
+
+  @Delete('delete/:id')
+  async deleteBookmark(
+    @Param('id') bookmarkId: string,
+    @GetUser('id') userId: number,
+  ) {
+    try {
+      return await this.bookmarkService.delete(+bookmarkId, userId);
+    } catch (error) {
+      console.error('Delete Bookmark Error (Controller):', error);
+      throw new InternalServerErrorException(
+        'Something went wrong while deleting the bookmark',
       );
     }
   }

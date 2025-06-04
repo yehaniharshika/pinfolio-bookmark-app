@@ -1,6 +1,10 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class UpdateBookMarkDto {
+  
+  @IsInt()
+  id?: number;
+  
   @IsOptional()
   @IsString({ message: 'Title must be a string' })
   title?: string;

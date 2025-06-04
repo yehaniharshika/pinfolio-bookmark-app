@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBookmarkDto } from './dto/create-bookmark.dto';
@@ -88,6 +89,34 @@ export class BookMarkService {
     } catch (error) {
       console.error('Update Bookmark Error:', error);
       throw new InternalServerErrorException('Failed to update bookmark');
+    }
+  }
+
+  async delete(bookmarkId: number, userId: number) {
+    try {
+      const bookmark = await this.prisma.bookMark.findFirst({
+        where: {
+          id: bookmarkId,
+          userId: userId,
+        },
+      });
+
+      if (!bookmark) {
+        throw new NotFoundException(
+          'Bookmark not found or you do not have permission to delete it',
+        );
+      }
+
+      await this.prisma.bookMark.delete({
+        where: { id: bookmarkId },
+      });
+
+      return {
+        message: 'Bookmark deleted successfully ✅',
+      };
+    } catch (error) {
+      console.error('Delete Bookmark Error:', error);
+      throw new InternalServerErrorException('Failed to delete bookmark');
     }
   }
 }
