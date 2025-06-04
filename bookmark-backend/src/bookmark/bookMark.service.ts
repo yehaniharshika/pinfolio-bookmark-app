@@ -23,6 +23,8 @@ export class BookMarkService {
           link: true,
           bookmarkImg: true,
           userId: true,
+          createdAt: true,
+          updatedAt: true,
         },
       });
 
@@ -30,7 +32,6 @@ export class BookMarkService {
         message: 'Bookmark created successfully ✅',
         data: bookmark,
       };
-
     } catch (error) {
       console.error('Create Bookmark Error:', error);
       throw new InternalServerErrorException('Failed to create bookmark');
