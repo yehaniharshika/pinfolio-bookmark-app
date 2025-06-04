@@ -9,13 +9,12 @@ A clean and simple **Next.js + Tailwind CSS** frontend web app to manage and dis
 This project is a frontend implementation of a Smart Bookmark Manager, where you can list bookmarks with images, titles, descriptions, and links. It's built with Next.js App Router and Tailwind CSS. No backend is connected - all data is currently hardcoded for learning purposes.
 
 ## 🧩 Backend
-Features
+### Features
 
 - RESTful API for bookmarks
 - Create, read, update, and delete bookmarks
 - MySQL as the database
 - Prisma ORM for database interaction
-
 
 ---
 
