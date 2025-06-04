@@ -34,7 +34,7 @@ model BookMark {
   updatedAt DateTime @updatedAt
 
   title       String
-  description String?
+  description String
   link        String
   bookmarkImg String  @db.Text
   userId      Int
