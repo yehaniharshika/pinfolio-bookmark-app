@@ -28,7 +28,7 @@ const Navbar = () => {
   const handleLogout = () => {
     // TODO: Add logout logic here (e.g., clear auth tokens, redirect)
     console.log("Logged out");
-    router.push("/login");
+    router.push("/");
   };
 
   return (
@@ -72,6 +72,7 @@ const Navbar = () => {
             <button
               onClick={handleLogout}
               className={`bg-white text-pink-800 px-3 py-1 rounded hover:bg-pink-300 hover:text-white transition duration-300 ${montserrat.className}`}
+              style={{cursor:"pointer"}}
             >
               Logout
             </button>

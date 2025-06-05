@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import "@/components/Alert/Alert.css";
+import Swal from "sweetalert2";
 
 const SignupPage = () => {
   const router = useRouter();
@@ -28,7 +30,17 @@ const SignupPage = () => {
       });
 
       if (response.ok) {
-        alert("Signup successful! Please log in.");
+        console.log("Signup successful! Please log in.");
+        Swal.fire({
+          title: "Success!",
+          text: "Signup successful! Please log in.",
+          icon: "success",
+          customClass: {
+            popup: "small-swal-popup",
+            title: "small-swal-title",
+            htmlContainer: "small-swal-text",
+          },
+        });
         router.push("/login");
       } else {
         const errorData = await response.json();
@@ -80,6 +92,7 @@ const SignupPage = () => {
           <button
             type="submit"
             className="bg-pink-600 text-white py-2 rounded hover:bg-pink-700"
+            style={{cursor:"pointer"}}
           >
             Sign Up
           </button>
