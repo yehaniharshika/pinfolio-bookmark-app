@@ -23,6 +23,7 @@ export default function BookMark() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<Bookmark | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     // Try to find Next.js root element, fallback to body
@@ -97,13 +98,64 @@ export default function BookMark() {
     setFormData({ ...formData, bookmarkImg: file.name });
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!formData) return;
 
-    /* TODO: call PUT /bookmark/:id with FormData */
-    console.log("update payload", formData);
-    closeModal();
+    try {
+      const token = localStorage.getItem("token");
+      const formDataToSend = new FormData();
+
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("link", formData.link);
+      formDataToSend.append("createdAt", formData.createdAt);
+      formDataToSend.append("updatedAt", formData.updatedAt);
+
+      if (selectedFile) {
+        formDataToSend.append("bookmarkImg", selectedFile);
+      }
+
+      const response = await fetch(
+        `http://localhost:3333/bookmark/update/${formData.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToSend,
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Updated successfully ✅", data);
+
+        // Update the bookmark in the local state
+        setBookmarks((prevBookmarks) =>
+          prevBookmarks.map((bookmark) =>
+            bookmark.id === formData.id
+              ? {
+                  ...bookmark,
+                  ...formData,
+                  bookmarkImg: data.data?.bookmarkImg || bookmark.bookmarkImg,
+                  updatedAt: data.data?.updatedAt || new Date().toISOString(),
+                }
+              : bookmark
+          )
+        );
+
+        closeModal();
+      } else {
+        console.error("Update failed ❌", data.message);
+        setError(data.message || "Failed to update bookmark");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setError("Network error occurred");
+    }
   };
 
   if (loading)
@@ -207,11 +259,11 @@ export default function BookMark() {
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Edit Bookmark"
-        className="bg-white p-6 rounded-lg w-full max-w-lg mx-auto shadow-xl outline-none mt-24"
-        overlayClassName="fixed inset-0 bg-transparent flex justify-center items-start z-50"
+        className="bg-white p-6 rounded-lg w-full max-w-lg mx-auto shadow-xl outline-none mt-24 max-h-[60vh] overflow-y-auto"
+        overlayClassName="fixed inset-0 bg-transparent bg-opacity-30 flex justify-center items-start z-50"
       >
         {formData && (
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium">Title</label>
               <input
@@ -229,6 +281,7 @@ export default function BookMark() {
                 value={formData.description}
                 onChange={onChange}
                 className="w-full border px-3 py-2 rounded"
+                rows={4}
               />
             </div>
             <div>
@@ -252,6 +305,7 @@ export default function BookMark() {
               {previewUrl && (
                 <img
                   src={previewUrl}
+                  alt="Preview"
                   className="mt-3 w-full h-40 object-contain border rounded"
                 />
               )}
@@ -298,7 +352,7 @@ export default function BookMark() {
                 type="submit"
                 className="bg-pink-600 text-white px-4 py-2 rounded"
               >
-                Save
+                Update
               </button>
             </div>
           </form>
