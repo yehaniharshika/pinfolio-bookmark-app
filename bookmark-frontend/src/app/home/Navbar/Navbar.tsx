@@ -26,8 +26,11 @@ const Navbar = () => {
   ];
 
   const handleLogout = () => {
-    // TODO: Add logout logic here (e.g., clear auth tokens, redirect)
+    //Remove token from localStorage
+    localStorage.removeItem("token");
     console.log("Logged out");
+
+    //Redirect to login or home page
     router.push("/");
   };
 
