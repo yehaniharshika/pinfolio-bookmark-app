@@ -1,9 +1,9 @@
-/* src/app/home/BookMark/BookMark.tsx */
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { lilitaOne, montserrat, rubikGemstones } from "@/app/fonts/fonts";
 import { FaEdit, FaTrash, FaHeart } from "react-icons/fa";
+import Modal from "react-modal";
 
 type Bookmark = {
   id: number;
@@ -12,71 +12,119 @@ type Bookmark = {
   link: string;
   createdAt: string;
   updatedAt: string;
-  bookmarkImg: string;         // filename OR full URL
+  bookmarkImg: string;
 };
 
 export default function BookMark() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
- 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<Bookmark | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Try to find Next.js root element, fallback to body
+    const appElement =
+      document.getElementById("__next") ||
+      document.getElementById("root") ||
+      document.body;
+    Modal.setAppElement(appElement);
+  }, []);
+
+  const imgUrl = (img: string) =>
+    img.startsWith("http") ? img : `http://localhost:3333/uploads/${img}`;
+
+  /*Fetch all bookmarks*/
   useEffect(() => {
     (async () => {
       try {
         const token = localStorage.getItem("token");
-
         const res = await fetch("http://localhost:3333/bookmark/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!res.ok) throw new Error("Failed to fetch bookmarks");
-
         const json = await res.json();
-        // backend shape: { message: "...", data: [...] }
-        const list: unknown = json.data;
-
-        if (Array.isArray(list)) {
-          setBookmarks(list as Bookmark[]);
-        } else {
-          throw new Error(
-            "Unexpected response format – expected an array in `data`"
-          );
-        }
-      } catch (err: any) {
-        console.error("Bookmark fetch error:", err);
-        setError(err.message ?? "Unknown error");
+        const list = json.data;
+        if (Array.isArray(list)) setBookmarks(list);
+        else throw new Error("Response data is not an array");
+      } catch (e: any) {
+        setError(e.message ?? "Unknown error");
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  
-  const getImageUrl = (img: string) =>
-    img.startsWith("http") ? img : `http://localhost:3333/uploads/${img}`;
+  const toDatetimeLocal = (dt: string) => {
+    const date = new Date(dt);
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+  };
 
+  /*Modal handlers*/
+  const openEditModal = (bm: Bookmark) => {
+    setFormData({
+      ...bm,
+      createdAt: toDatetimeLocal(bm.createdAt),
+      updatedAt: toDatetimeLocal(bm.updatedAt),
+    });
+    setPreviewUrl(imgUrl(bm.bookmarkImg));
+    setIsModalOpen(true);
+  };
 
-  if (loading) {
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setFormData(null);
+    setPreviewUrl(null);
+  };
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!formData) return;
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !formData) return;
+    // TEMP preview, actual upload logic should be in submit
+    setPreviewUrl(URL.createObjectURL(file));
+    setFormData({ ...formData, bookmarkImg: file.name });
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData) return;
+
+    /* TODO: call PUT /bookmark/:id with FormData */
+    console.log("update payload", formData);
+    closeModal();
+  };
+
+  if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#dcb8c3]">
-        <p className={`text-pink-800 font-semibold ${montserrat.className}`} style={{fontSize:"15px"}}>Loading your Bookmarks…</p>
+        <p className={`text-pink-800 ${montserrat.className}`}>
+          Loading Bookmarks…
+        </p>
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#dcb8c3]">
         <p className="text-red-600 font-semibold">Error: {error}</p>
       </div>
     );
-  }
 
   return (
     <div className="p-6 bg-[#dcb8c3] min-h-screen" id="bookmarks">
-      {/* heading ------------------------------------------------------- */}
-      <div className="text-center mb-8">
+      <header className="text-center mb-8">
         <h1 className={`text-3xl text-pink-800 ${rubikGemstones.className}`}>
           Your Bookmarks
         </h1>
@@ -87,15 +135,13 @@ export default function BookMark() {
           Save, edit, and manage your favorite learning resources in one
           organized space.
         </p>
-      </div>
+      </header>
 
-      {/* no-bookmarks fallback ---------------------------------------- */}
       {bookmarks.length === 0 && (
-        <p className="text-center text-gray-700 font-medium">
+        <p className="text-center text-gray-700">
           You haven’t added any bookmarks yet.
         </p>
       )}
-
 
       <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto"
@@ -104,12 +150,11 @@ export default function BookMark() {
         {bookmarks.map((bm) => (
           <div
             key={bm.id}
-            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
           >
-            
             {bm.bookmarkImg ? (
               <img
-                src={getImageUrl(bm.bookmarkImg)}
+                src={imgUrl(bm.bookmarkImg)}
                 alt={bm.title}
                 className="w-full h-40 object-cover"
               />
@@ -118,45 +163,38 @@ export default function BookMark() {
                 No Image
               </div>
             )}
-
-            {/*bookmark card body*/}
             <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              <h2 className="text-xl font-semibold text-gray-800 mb-1">
                 {bm.title}
               </h2>
-              <p
-                className="text-gray-600 mb-2"
-                style={{ fontSize: 14, fontWeight: 500 }}
-              >
+              <p className="text-gray-600 mb-2" style={{ fontSize: 14 }}>
                 {bm.description}
               </p>
-
               <a
                 href={bm.link}
                 target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 text-sm underline mb-2 inline-block"
-                style={{ textDecoration: "none", fontWeight: 700, fontSize: 12 }}
+                className="text-blue-600 underline text-sm"
               >
                 Visit Link
               </a>
-
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 mt-1">
                 Created: {new Date(bm.createdAt).toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 mt-2">
                 Updated: {new Date(bm.updatedAt).toLocaleString()}
               </p>
-
-              {/* action buttons ------------------------------------- */}
-              <div className="flex justify-end gap-4 mt-4 text-gray-600">
-                <button className="hover:text-yellow-500" aria-label="Favorite">
+              <div className="flex justify-end gap-3 mt-3 text-gray-600">
+                <button className="hover:text-yellow-500" aria-label="Fav">
                   <FaHeart size={18} />
                 </button>
-                <button className="hover:text-blue-500" aria-label="Edit">
+                <button
+                  className="hover:text-blue-500"
+                  aria-label="Edit"
+                  onClick={() => openEditModal(bm)}
+                >
                   <FaEdit size={18} />
                 </button>
-                <button className="hover:text-red-500" aria-label="Delete">
+                <button className="hover:text-red-500" aria-label="Del">
                   <FaTrash size={18} />
                 </button>
               </div>
@@ -164,6 +202,108 @@ export default function BookMark() {
           </div>
         ))}
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Edit Bookmark"
+        className="bg-white p-6 rounded-lg w-full max-w-lg mx-auto shadow-xl outline-none mt-24"
+        overlayClassName="fixed inset-0 bg-transparent flex justify-center items-start z-50"
+      >
+        {formData && (
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={onChange}
+                className="w-full border px-3 py-2 rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={onChange}
+                className="w-full border px-3 py-2 rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Link</label>
+              <input
+                type="url"
+                name="link"
+                value={formData.link}
+                onChange={onChange}
+                className="w-full border px-3 py-2 rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Replace Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={onFileChange}
+                className="w-full border px-3 py-2 rounded"
+              />
+              {previewUrl && (
+                <img
+                  src={previewUrl}
+                  className="mt-3 w-full h-40 object-contain border rounded"
+                />
+              )}
+            </div>
+            <div>
+              <label className="block font-medium" style={{ fontSize: "14px" }}>
+                Created At
+              </label>
+              <input
+                type="datetime-local"
+                name="createdAt"
+                value={formData.createdAt}
+                onChange={onChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                style={{ fontSize: "13px" }}
+              />
+            </div>
+
+            <div>
+              <label
+                className="block text-sm font-medium"
+                style={{ fontSize: "14px" }}
+              >
+                Updated At
+              </label>
+              <input
+                type="datetime-local"
+                name="updatedAt"
+                value={formData.updatedAt}
+                onChange={onChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                style={{ fontSize: "13px" }}
+              />
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-pink-600 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 }
