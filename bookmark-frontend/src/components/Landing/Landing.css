@@ -1,0 +1,57 @@
+/* Star field animation */
+.stars, .twinkling {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  background: transparent;
+}
+
+.stars {
+  background: url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+  animation: moveStars 100s linear infinite;
+  opacity: 0.3;
+}
+
+.twinkling {
+  background: url("https://www.transparenttextures.com/patterns/tiny-grid.png") repeat;
+  animation: twinkle 200s linear infinite;
+  opacity: 0.1;
+}
+
+/* Keyframe for subtle movement */
+@keyframes moveStars {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 5000px;
+  }
+}
+
+@keyframes twinkle {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 5000px 10000px;
+  }
+}
+
+/* Fade down animation for the heading */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 1.2s ease-out;
+}
