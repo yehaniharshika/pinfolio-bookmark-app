@@ -39,7 +39,7 @@ It supports user registration, login, and authenticated CRUD operations on bookm
   - Title & Description
   - Visit Link
   - Created & Updated dates
-- Mark as Favorite
+- Mark as Favorite(UI only)
 - Edit & Delete Bookmark
 - Clean and minimal layout
 - Responsive for all devices
@@ -75,7 +75,7 @@ It supports user registration, login, and authenticated CRUD operations on bookm
 ## 📁 Project Structure
 
 ```sh
-hcode-intern-task-Yehani/
+pinfolio-bookmark-app/
 │          
 ├── bookmark-backend/ # Backend - NestJS API   
 ├── bookmark-frontend/ # Frontend - Next.js App  
