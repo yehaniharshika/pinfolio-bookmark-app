@@ -1,9 +1,8 @@
-// layout.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/Home/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer"; // make sure you have this
+import Navbar from "@/app/home/Navbar/Navbar";
+import Footer from "@/components/Footer/Footer";
 import { lilitaOne, montserrat, nunito, rubikGemstones } from "./fonts/fonts";
 import "./globals.css";
 
@@ -14,16 +13,18 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
 
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  // Hide Navbar and Footer on '/', '/login', and '/signup'
+  const isHiddenPage =
+    pathname === "/" || pathname.startsWith("/login") || pathname.startsWith("/signup");
 
   return (
     <html lang="en" className="scroll-smooth">
       <body
         className={`${nunito.className} ${lilitaOne.className} ${rubikGemstones.className} ${montserrat.className} antialiased`}
       >
-        {!isAuthPage && <Navbar />}
+        {!isHiddenPage && <Navbar />}
         {children}
-        {!isAuthPage && <Footer />}
+        {!isHiddenPage && <Footer />}
       </body>
     </html>
   );

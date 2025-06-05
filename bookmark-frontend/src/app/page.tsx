@@ -1,22 +1,33 @@
-"use client";
+// app/page.tsx
+"use client"; // allows using hooks or client-side code
 
-import Home from "@/components/Home/Home";
-import React, { useState, useEffect } from "react";
-import LoginPage from "./login/page";
+import Link from "next/link"; // for navigation between pages
 
-export default function HomePage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center bg-pink-100">
+      <h1 className="text-4xl font-bold text-pink-700 mb-4">
+        Welcome to Bookmark App
+      </h1>
+      <p className="mb-8 text-lg text-center">Login or sign up to continue</p>
+      
+      <div className="flex gap-4">
+        {/* Link to login page */}
+        <Link
+          href="/login"
+          className="bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700 transition"
+        >
+          Login
+        </Link>
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-    setLoading(false);
-  }, []);
-
-  if (loading) return null;
-
-  return isLoggedIn ? <Home /> : <LoginPage />;
+        {/* Link to signup page */}
+        <Link
+          href="/signup"
+          className="bg-white border-2 border-pink-600 text-pink-600 px-6 py-2 rounded hover:bg-pink-100 transition"
+        >
+          Signup
+        </Link>
+      </div>
+    </div>
+  );
 }

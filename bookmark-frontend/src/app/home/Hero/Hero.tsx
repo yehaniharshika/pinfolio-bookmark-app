@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { montserrat, nunito, rubikGemstones } from "@/app/fonts/fonts";
 import { useRouter } from "next/navigation";
@@ -5,9 +7,9 @@ import { useRouter } from "next/navigation";
 const Hero = () => {
   const router = useRouter();
 
-  const navigateAddBookmark=() =>{
+  const navigateAddBookmark = () => {
     router.push("/addBookmark");
-  }
+  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -30,7 +32,7 @@ const Hero = () => {
           Your Smart Bookmark Manager
         </h1>
 
-        <p className={`mt-4 ${montserrat.className} text-gray-200 font-medium max-w-xl`} style={{fontSize:"14px"}}>
+        <p className={`mt-4 ${montserrat.className} text-gray-200 font-medium max-w-xl`} style={{ fontSize: "14px" }}>
           Save what matters. Organize your links. Access everything in one place anytime , anywhere.
         </p>
 

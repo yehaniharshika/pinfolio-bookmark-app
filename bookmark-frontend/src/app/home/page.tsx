@@ -2,7 +2,7 @@ import React from 'react'
 import Hero from './Hero/Hero'
 import About from './About/About'
 import BookMark from './BookMark/BookMark'
-import Footer from '../Footer/Footer'
+import Footer from '../../components/Footer/Footer'
 import Navbar from './Navbar/Navbar'
 
 const Home = () => {
@@ -12,7 +12,7 @@ const Home = () => {
       <Hero/>
       <About/>
       <BookMark/>
-      <Footer/>
+     
     </div>
   )
 }

@@ -24,7 +24,7 @@ const LoginPage = () => {
         const data = await response.json();
         localStorage.setItem("token", data.access_token);
         alert("Login successful!");
-        router.replace("/"); 
+        router.replace("/home");
       } else {
         const errorData = await response.json();
         alert(`Login failed: ${errorData.message || "Unknown error"}`);

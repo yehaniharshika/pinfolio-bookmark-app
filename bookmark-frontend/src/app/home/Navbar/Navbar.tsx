@@ -19,11 +19,11 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "#" },
-    { name: "About", href: "#about" },
-    { name: "Book Marks", href: "#bookmarks" },
-    { name: "Contact", href: "#contact" },
-  ];
+  { name: "Home", href: "/home" }, // change this
+  { name: "About", href: "#about" }, // this stays if you're scrolling
+  { name: "Book Marks", href: "#bookmarks" },
+  { name: "Contact", href: "#contact" },
+];
 
   const handleLogout = () => {
     // TODO: Add logout logic here (e.g., clear auth tokens, redirect)
@@ -44,7 +44,7 @@ const Navbar = () => {
             <GiNotebook className="w-6 h-6 text-white" />
           </div>
           <a
-            href="#"
+            href="/home"
             className={`text-xl md:text-2xl text-white uppercase font-bold ${lilitaOne.className}`}
           >
             Pinfolio
