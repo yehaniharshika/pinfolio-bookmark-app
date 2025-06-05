@@ -5,6 +5,7 @@ import { lilitaOne, montserrat, rubikGemstones } from "@/app/fonts/fonts";
 import { FaEdit, FaTrash, FaHeart } from "react-icons/fa";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
+import "@/components/Alert/Alert.css";
 
 type Bookmark = {
   id: number;
@@ -110,6 +111,11 @@ export default function BookMark() {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
+      customClass: {
+        popup: "small-swal-popup",
+        title: "small-swal-title",
+        htmlContainer: "small-swal-text",
+      },
     });
     if (!confirm.isConfirmed) return;
 
@@ -126,7 +132,16 @@ export default function BookMark() {
       // remove from UI without a full reload
       setBookmarks((prev) => prev.filter((b) => b.id !== id));
 
-      Swal.fire("Deleted!", data.message, "success"); // optional toast
+      Swal.fire({
+        title: "Deleted!",
+        text: data.message,
+        icon: "success",
+        customClass: {
+          popup: "small-swal-popup",
+          title: "small-swal-title",
+          htmlContainer: "small-swal-text",
+        },
+      });
     } catch (err: any) {
       console.error(err);
       Swal.fire("Error", err.message || "Failed to delete ❌", "error");
@@ -166,6 +181,16 @@ export default function BookMark() {
 
       if (response.ok) {
         console.log("Updated successfully ✅", data);
+        Swal.fire({
+          title: "Success!",
+          text: "Bookmark Updated successfully.",
+          icon: "success",
+          customClass: {
+            popup: "small-swal-popup",
+            title: "small-swal-title",
+            htmlContainer: "small-swal-text",
+          },
+        });
 
         // Update the bookmark in the local state
         setBookmarks((prevBookmarks) =>
@@ -195,7 +220,10 @@ export default function BookMark() {
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#dcb8c3]">
-        <p className={`text-pink-800 ${montserrat.className}`} style={{fontSize:"15px",fontWeight:"700"}}>
+        <p
+          className={`text-pink-800 ${montserrat.className}`}
+          style={{ fontSize: "15px", fontWeight: "700" }}
+        >
           Loading Bookmarks..
         </p>
       </div>
@@ -283,7 +311,7 @@ export default function BookMark() {
                 <button
                   className="hover:text-red-500"
                   aria-label="Del"
-                  onClick={() => handleDelete(bm.id)} // Fixed: changed from bookmark.id to bm.id
+                  onClick={() => handleDelete(bm.id)}
                 >
                   <FaTrash size={18} />
                 </button>
@@ -302,6 +330,12 @@ export default function BookMark() {
       >
         {formData && (
           <form onSubmit={handleSubmit} className="space-y-4">
+            <h2
+              className={`text-xl font-semibold mb-6 text-center text-pink-700 ${montserrat.className}`}
+              style={{ fontWeight: "bold" }}
+            >
+              Edit Bookmark
+            </h2>
             <div>
               <label className="block text-sm font-medium">Title</label>
               <input

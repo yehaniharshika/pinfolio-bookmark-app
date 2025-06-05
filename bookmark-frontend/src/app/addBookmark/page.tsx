@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { montserrat } from "../fonts/fonts";
+import Swal from "sweetalert2";
+import "@/components/Alert/Alert.css";
 
 const AddBookmarkPage = () => {
   const [formData, setFormData] = useState({
@@ -77,10 +79,20 @@ const AddBookmarkPage = () => {
       });
       setFile(null);
       setPreviewUrl(null);
-      alert("Bookmark created successfully!");
+      console.log("Bookmark created successfully!");
+      Swal.fire({
+        title: "Success!",
+        text: "Bookmark added successfully.",
+        icon: "success",
+        customClass: {
+          popup: "small-swal-popup",
+          title: "small-swal-title",
+          htmlContainer: "small-swal-text",
+        },
+      });
     } catch (error) {
       console.error(error);
-      alert("Error creating bookmark");
+      Swal.fire("Error!", "There was a problem adding the bookmark.", "error");
     }
   };
 

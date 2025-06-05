@@ -1,0 +1,19 @@
+/* Smaller width & height */
+.small-swal-popup {
+  width: 380px !important;
+  height: 300px !important;
+  padding: 10px !important;
+  font-size: 15px !important;
+}
+
+/* Smaller title */
+.small-swal-title {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+/* Smaller text content */
+.small-swal-text {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
