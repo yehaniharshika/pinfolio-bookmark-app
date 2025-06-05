@@ -38,7 +38,7 @@ const Hero = () => {
 
         <div className="mt-6">
           <button
-            className={`bg-white ${montserrat.className} font-bold text-pink-800 px-6 py-2 rounded-md hover:bg-indigo-100 transition border-2`}
+            className={`bg-white ${montserrat.className} font-bold text-pink-800 px-6 py-2 rounded-md hover:bg-indigo-100 transition border-2 cursor-pointer`}
             style={{ fontSize: "14px" }}
             onClick={navigateAddBookmark}
           >
