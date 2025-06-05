@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
-    private config: ConfigService
+    private config: ConfigService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -71,20 +71,21 @@ export class AuthService {
     return this.signToken(user.id, user.email);
   }
 
-  async signToken(userId: number, email: string): Promise<{access_token: string}> {
+  async signToken(
+    userId: number,
+    email: string,
+  ): Promise<{ access_token: string }> {
     const payload = { sub: userId, email };
 
     const secret = this.config.get<string>('JWT_SECRET'); // correct key
 
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '30m',
+      expiresIn: '12h',
       secret: secret,
     });
 
     return {
       access_token: token,
-    }
-
-    
+    };
   }
 }
