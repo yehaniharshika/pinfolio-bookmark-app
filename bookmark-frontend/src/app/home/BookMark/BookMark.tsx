@@ -26,6 +26,7 @@ export default function BookMark() {
   const [formData, setFormData] = useState<Bookmark | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
     // Try to find Next.js root element, fallback to body
@@ -67,6 +68,12 @@ export default function BookMark() {
     const offset = date.getTimezoneOffset();
     const localDate = new Date(date.getTime() - offset * 60 * 1000);
     return localDate.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+  };
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+    );
   };
 
   /*Modal handlers*/
@@ -281,24 +288,31 @@ export default function BookMark() {
               <h2 className="text-xl font-semibold text-gray-800 mb-1">
                 {bm.title}
               </h2>
-              <p className="text-gray-600 mb-2" style={{ fontSize: 14 }}>
+              <p className="text-gray-600 mb-2" style={{ fontWeight: "550" }}>
                 {bm.description}
               </p>
               <a
                 href={bm.link}
                 target="_blank"
                 className="text-blue-600 underline text-sm"
+                style={{ textDecoration: "none", fontWeight: "600" }}
               >
                 Visit Link
               </a>
-              <p className="text-xs text-gray-500 mt-1">
+              <p
+                className="text-xs text-gray-500 mt-1"
+                style={{ fontWeight: "500" }}
+              >
                 Created: {new Date(bm.createdAt).toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500 mt-2">
+              <p
+                className="text-xs text-gray-500 mt-2"
+                style={{ fontWeight: "500" }}
+              >
                 Updated: {new Date(bm.updatedAt).toLocaleString()}
               </p>
               <div className="flex justify-end gap-3 mt-3 text-gray-600">
-                <button className="hover:text-yellow-500" aria-label="Fav">
+                <button className="hover:text-pink-300" aria-label="Fav">
                   <FaHeart size={18} />
                 </button>
                 <button
@@ -417,12 +431,14 @@ export default function BookMark() {
                 type="button"
                 onClick={closeModal}
                 className="bg-gray-300 px-4 py-2 rounded"
+                style={{ cursor: "pointer",fontSize:"14px",fontWeight:"500" }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 className="bg-pink-600 text-white px-4 py-2 rounded"
+                style={{ cursor: "pointer",fontSize:"14px",fontWeight:"500" }}
               >
                 Update
               </button>

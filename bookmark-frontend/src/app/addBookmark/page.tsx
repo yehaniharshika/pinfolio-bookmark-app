@@ -110,7 +110,7 @@ const AddBookmarkPage = () => {
   return (
     <div className="max-w-xl mx-auto mt-30 p-6 bg-[#dcb8c3] shadow-md rounded mb-10">
       <h2
-        className={`text-xl font-semibold mb-6 text-center text-pink-700 ${montserrat.className}`}
+        className={`text-xl mb-6 text-center text-pink-700 ${montserrat.className}`}
         style={{ fontWeight: "bold" }}
       >
         Add New Bookmark
@@ -220,7 +220,7 @@ const AddBookmarkPage = () => {
             type="button"
             onClick={handleAdd}
             className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 transition"
-            style={{ fontSize: "14px", fontWeight: "600" }}
+            style={{ fontSize: "14px", fontWeight: "600" ,cursor:"pointer"}}
           >
             Add
           </button>
@@ -228,7 +228,7 @@ const AddBookmarkPage = () => {
             type="button"
             onClick={handleCancel}
             className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
-            style={{ fontSize: "14px", fontWeight: "600" }}
+            style={{ fontSize: "14px", fontWeight: "600" ,cursor:"pointer"}}
           >
             Cancel
           </button>

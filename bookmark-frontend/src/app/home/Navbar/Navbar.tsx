@@ -5,7 +5,7 @@ import { HiMenuAlt1 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { lilitaOne, montserrat } from "@/app/fonts/fonts";
 import { useRouter } from "next/navigation";
-
+import { FaHeart } from "react-icons/fa";
 
 const Navbar = () => {
   const [navBg, setNavBg] = useState(false);
@@ -19,11 +19,11 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-  { name: "Home", href: "/home" }, // change this
-  { name: "About", href: "#about" }, // this stays if you're scrolling
-  { name: "Book Marks", href: "#bookmarks" },
-  { name: "Contact", href: "#contact" },
-];
+    { name: "Home", href: "/home" }, // change this
+    { name: "About", href: "#about" }, // this stays if you're scrolling
+    { name: "Book Marks", href: "#bookmarks" },
+    { name: "Contact", href: "#contact" },
+  ];
 
   const handleLogout = () => {
     // TODO: Add logout logic here (e.g., clear auth tokens, redirect)
@@ -66,13 +66,22 @@ const Navbar = () => {
               </a>
             </li>
           ))}
+          <li>
+            <button
+              className="hover:text-pink-300"
+              aria-label="Fav"
+              onClick={() => router.push("/favorite-Bookmark")}
+            >
+              <FaHeart size={18} />
+            </button>
+          </li>
 
           {/* Logout Button for Desktop */}
           <li>
             <button
               onClick={handleLogout}
               className={`bg-white text-pink-800 px-3 py-1 rounded hover:bg-pink-300 hover:text-white transition duration-300 ${montserrat.className}`}
-              style={{cursor:"pointer"}}
+              style={{ cursor: "pointer" }}
             >
               Logout
             </button>
@@ -115,6 +124,15 @@ const Navbar = () => {
             </li>
           ))}
           {/* Logout Button for Mobile */}
+          <li>
+            <button
+              className="hover:text-pink-300"
+              aria-label="Fav"
+              onClick={() => router.push("/favorite-Bookmark")}
+            >
+              <FaHeart size={18} />
+            </button>
+          </li>
           <li>
             <button
               onClick={() => {
