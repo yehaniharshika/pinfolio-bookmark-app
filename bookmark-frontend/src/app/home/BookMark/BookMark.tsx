@@ -60,7 +60,7 @@ export default function BookMark() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#dcb8c3]">
-        <p className="text-pink-800 text-lg font-semibold">Loading…</p>
+        <p className={`text-pink-800 font-semibold ${montserrat.className}`} style={{fontSize:"15px"}}>Loading your Bookmarks…</p>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export default function BookMark() {
         </p>
       )}
 
-      {/* grid ---------------------------------------------------------- */}
+
       <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto"
         style={{ maxWidth: "76%" }}
@@ -119,7 +119,7 @@ export default function BookMark() {
               </div>
             )}
 
-            {/* body --------------------------------------------------- */}
+            {/*bookmark card body*/}
             <div className="p-4">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
                 {bm.title}
