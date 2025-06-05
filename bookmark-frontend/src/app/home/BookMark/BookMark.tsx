@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { lilitaOne, montserrat, rubikGemstones } from "@/app/fonts/fonts";
 import { FaEdit, FaTrash, FaHeart } from "react-icons/fa";
 import Modal from "react-modal";
+import Swal from "sweetalert2";
 
 type Bookmark = {
   id: number;
@@ -37,26 +38,28 @@ export default function BookMark() {
   const imgUrl = (img: string) =>
     img.startsWith("http") ? img : `http://localhost:3333/uploads/${img}`;
 
-  /*Fetch all bookmarks*/
   useEffect(() => {
-    (async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3333/bookmark/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to fetch bookmarks");
-        const json = await res.json();
-        const list = json.data;
-        if (Array.isArray(list)) setBookmarks(list);
-        else throw new Error("Response data is not an array");
-      } catch (e: any) {
-        setError(e.message ?? "Unknown error");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    fetchBookmarks();
   }, []);
+
+  // 🔄 put this just above the first useEffect
+  const fetchBookmarks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3333/bookmark/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch bookmarks");
+      const json = await res.json();
+      const list = json.data;
+      if (Array.isArray(list)) setBookmarks(list);
+      else throw new Error("Response data is not an array");
+    } catch (e: any) {
+      setError(e.message ?? "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toDatetimeLocal = (dt: string) => {
     const date = new Date(dt);
@@ -98,6 +101,37 @@ export default function BookMark() {
     setFormData({ ...formData, bookmarkImg: file.name });
   };
 
+  const handleDelete = async (id: number) => {
+    // optional confirmation dialog
+    const confirm = await Swal.fire({
+      title: "Delete this bookmark?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:3333/bookmark/delete/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Delete failed");
+
+      // remove from UI without a full reload
+      setBookmarks((prev) => prev.filter((b) => b.id !== id));
+
+      Swal.fire("Deleted!", data.message, "success"); // optional toast
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire("Error", err.message || "Failed to delete ❌", "error");
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -161,8 +195,8 @@ export default function BookMark() {
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen bg-[#dcb8c3]">
-        <p className={`text-pink-800 ${montserrat.className}`}>
-          Loading Bookmarks…
+        <p className={`text-pink-800 ${montserrat.className}`} style={{fontSize:"15px",fontWeight:"700"}}>
+          Loading Bookmarks..
         </p>
       </div>
     );
@@ -246,7 +280,11 @@ export default function BookMark() {
                 >
                   <FaEdit size={18} />
                 </button>
-                <button className="hover:text-red-500" aria-label="Del">
+                <button
+                  className="hover:text-red-500"
+                  aria-label="Del"
+                  onClick={() => handleDelete(bm.id)} // Fixed: changed from bookmark.id to bm.id
+                >
                   <FaTrash size={18} />
                 </button>
               </div>
