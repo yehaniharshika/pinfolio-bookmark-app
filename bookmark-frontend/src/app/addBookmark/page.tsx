@@ -76,6 +76,7 @@ const AddBookmarkPage = () => {
         bookmarkImg: "",
       });
       setFile(null);
+      setPreviewUrl(null);
       alert("Bookmark created successfully!");
     } catch (error) {
       console.error(error);
